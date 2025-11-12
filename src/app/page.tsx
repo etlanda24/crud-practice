@@ -201,8 +201,8 @@ export default function Home() {
                {filteredPosts.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                       {filteredPosts.map((p) => (
-                      <Link href={`/posts/${p.id}`} key={p.id} className="group">
-                        <Card id={`post-card-${p.id}`} className="flex flex-col h-full transition-all group-hover:shadow-lg group-hover:border-primary">
+                        <Card id={`post-card-${p.id}`} key={p.id} className="flex flex-col h-full transition-all group-hover:shadow-lg group-hover:border-primary">
+                          <Link href={`/posts/${p.id}`} className="group flex-grow">
                             <CardHeader>
                                 {p.imageUrl ? (
                                     <div className="relative aspect-video w-full mb-4">
@@ -234,8 +234,9 @@ export default function Home() {
                                      <span className={`font-semibold ${priorityColors[p.priority]}`}>{p.priority} Priority</span>
                                 </div>
                             </CardContent>
+                          </Link>
                             <CardFooter className="flex justify-end gap-2">
-                                <Link href={`/posts/edit/${p.id}`} onClick={(e) => e.stopPropagation()}>
+                                <Link href={`/posts/edit/${p.id}`}>
                                   <Button id={`edit-post-${p.id}`} variant="outline" size="icon">
                                     <Edit className="h-4 w-4" />
                                     <span className="sr-only">Edit</span>
@@ -243,7 +244,7 @@ export default function Home() {
                                 </Link>
                                 <AlertDialog>
                                   <AlertDialogTrigger asChild>
-                                    <Button id={`delete-post-${p.id}`} variant="destructive" size="icon" onClick={(e) => {e.stopPropagation(); e.preventDefault()}}>
+                                    <Button id={`delete-post-${p.id}`} variant="destructive" size="icon">
                                       <Trash2 className="h-4 w-4" />
                                       <span className="sr-only">Delete</span>
                                     </Button>
@@ -256,14 +257,13 @@ export default function Home() {
                                       </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
-                                      <AlertDialogCancel onClick={(e) => e.stopPropagation()}>Cancel</AlertDialogCancel>
-                                      <AlertDialogAction onClick={(e) => {e.stopPropagation(); handleDelete(p.id)}}>Delete</AlertDialogAction>
+                                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                      <AlertDialogAction onClick={() => handleDelete(p.id)}>Delete</AlertDialogAction>
                                     </AlertDialogFooter>
                                   </AlertDialogContent>
                                 </AlertDialog>
                             </CardFooter>
                         </Card>
-                      </Link>
                       ))}
                   </div>
               ) : (
