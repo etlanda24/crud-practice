@@ -75,6 +75,7 @@ const elementSchema = z.object({
     "select",
     "checkbox",
   ]),
+  inputType: z.enum(["text", "password", "email", "number", "date", "color"]).optional(),
   value: z.string().optional(),
 });
 
@@ -101,9 +102,12 @@ export default function WebautoHelper() {
     defaultValues: {
       elementId: "",
       elementType: "input",
+      inputType: "text",
       value: "",
     },
   });
+
+  const elementType = form.watch("elementType");
 
   useEffect(() => {
     setIsClient(true);
@@ -160,6 +164,7 @@ export default function WebautoHelper() {
       }
       const newElement: WebElement = {
         ...values,
+        inputType: values.elementType === 'input' ? values.inputType : undefined,
         value: values.value || "",
         internalId: getUuid(),
       };
@@ -169,7 +174,7 @@ export default function WebautoHelper() {
         description: `Element "${values.elementId}" has been created.`,
       });
     }
-    form.reset();
+    form.reset({elementId: "", elementType: "input", inputType: "text", value: ""});
     setSelectedElement(null);
   };
 
@@ -206,7 +211,7 @@ export default function WebautoHelper() {
 
   const cancelEdit = () => {
     setSelectedElement(null);
-    form.reset();
+    form.reset({elementId: "", elementType: "input", inputType: "text", value: ""});
   };
 
   const renderElement = (element: WebElement) => {
@@ -219,7 +224,7 @@ export default function WebautoHelper() {
       case "button":
         return <Button key={internalId} {...commonProps}>{rest.value || rest.elementId}</Button>;
       case "input":
-        return <Input key={internalId} {...commonProps} defaultValue={rest.value} placeholder={rest.elementId} />;
+        return <Input key={internalId} type={rest.inputType} {...commonProps} defaultValue={rest.value} placeholder={rest.elementId} />;
       case "textarea":
         return <Textarea key={internalId} {...commonProps} defaultValue={rest.value} placeholder={rest.elementId} />;
       case "p":
@@ -312,7 +317,7 @@ export default function WebautoHelper() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Element Type</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <Select onValueChange={field.onChange} value={field.value}>
                               <FormControl>
                                 <SelectTrigger id="element-type-select">
                                   <SelectValue placeholder="Select an element type" />
@@ -336,6 +341,33 @@ export default function WebautoHelper() {
                           </FormItem>
                         )}
                       />
+                      {elementType === 'input' && (
+                        <FormField
+                          control={form.control}
+                          name="inputType"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Input Type</FormLabel>
+                              <Select onValueChange={field.onChange} value={field.value}>
+                                <FormControl>
+                                  <SelectTrigger id="input-type-select">
+                                    <SelectValue placeholder="Select an input type" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="text">Text</SelectItem>
+                                  <SelectItem value="password">Password</SelectItem>
+                                  <SelectItem value="email">Email</SelectItem>
+                                  <SelectItem value="number">Number</SelectItem>
+                                  <SelectItem value="date">Date</SelectItem>
+                                  <SelectItem value="color">Color</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      )}
                        <FormField
                         control={form.control}
                         name="value"
@@ -387,7 +419,7 @@ export default function WebautoHelper() {
                                     {elements.map((el) => (
                                     <TableRow key={el.internalId} id={`element-row-${el.internalId}`}>
                                         <TableCell className="font-medium font-code">{el.elementId}</TableCell>
-                                        <TableCell className="capitalize">{el.elementType}</TableCell>
+                                        <TableCell className="capitalize">{el.elementType === 'input' ? `Input (${el.inputType})` : el.elementType}</TableCell>
                                         <TableCell className="truncate max-w-xs">{el.value}</TableCell>
                                         <TableCell className="text-right">
                                         <div className="flex justify-end gap-2">
