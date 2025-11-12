@@ -147,16 +147,6 @@ export default function PRDPage() {
             </CardContent>
         </Card>
       </section>
-
-      <section id="future">
-        <h2 className="text-2xl font-semibold mb-2">6. Future Enhancements (Out of Scope for v1.0)</h2>
-        <ul className="list-disc pl-5 space-y-1 text-foreground/90">
-          <li><strong>Rich Text Editing:</strong> Replace the plain textarea with a WYSIWYG editor.</li>
-          <li><strong>Tagging System:</strong> Add the ability to add multiple tags to posts and filter by them.</li>
-          <li><strong>Data Import/Export:</strong> Allow users to back up their posts by exporting them to a JSON file.</li>
-          <li><strong>Cloud Sync:</strong> Integrate with a backend service like Firebase Firestore.</li>
-        </ul>
-      </section>
     </div>
   );
 }
