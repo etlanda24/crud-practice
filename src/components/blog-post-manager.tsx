@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -59,7 +59,7 @@ const postSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters long."),
   content: z.string().min(10, "Content must be at least 10 characters long."),
   author: z.string().min(2, "Author name is required."),
-  imageUrl: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
+  imageUrl: z.string().optional(),
   category: z.enum(["Technology", "Lifestyle", "Travel", "Food", "Business"]),
   priority: z.enum(["Low", "Medium", "High"]),
   isPublished: z.boolean().default(false),
@@ -83,6 +83,7 @@ export default function BlogPostManager() {
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
   const [isClient, setIsClient] = useState(false);
   const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<z.infer<typeof postSchema>>({
     resolver: zodResolver(postSchema),
@@ -97,6 +98,8 @@ export default function BlogPostManager() {
       publishDate: new Date(),
     },
   });
+
+  const imageUrlValue = form.watch("imageUrl");
 
   useEffect(() => {
     setIsClient(true);
@@ -134,6 +137,17 @@ export default function BlogPostManager() {
     }
   }, [posts, isClient]);
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        form.setValue("imageUrl", reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const onSubmit = (values: z.infer<typeof postSchema>) => {
     if (selectedPost) {
       const updatedPosts = posts.map((p) =>
@@ -165,6 +179,9 @@ export default function BlogPostManager() {
       isPublished: false,
       publishDate: new Date(),
     });
+    if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+    }
     setSelectedPost(null);
   };
 
@@ -195,6 +212,9 @@ export default function BlogPostManager() {
       isPublished: false,
       publishDate: new Date(),
     });
+     if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+    }
   };
 
   return (
@@ -231,7 +251,24 @@ export default function BlogPostManager() {
                     <FormItem><FormLabel>Author</FormLabel><FormControl><Input placeholder="e.g., John Doe" {...field} /></FormControl><FormMessage /></FormItem>
                   )} />
                   <FormField control={form.control} name="imageUrl" render={({ field }) => (
-                    <FormItem><FormLabel>Image URL</FormLabel><FormControl><Input type="url" placeholder="https://example.com/image.jpg" {...field} /></FormControl><FormMessage /></FormItem>
+                     <FormItem>
+                        <FormLabel>Image</FormLabel>
+                        <FormControl>
+                            <Input 
+                                type="file" 
+                                accept="image/*" 
+                                onChange={handleFileChange} 
+                                ref={fileInputRef}
+                                className="file:text-foreground"
+                            />
+                        </FormControl>
+                        {imageUrlValue && (
+                            <div className="relative mt-4 aspect-video w-full">
+                                <Image src={imageUrlValue} alt="Image preview" fill className="object-cover rounded-md border" />
+                            </div>
+                        )}
+                        <FormMessage />
+                    </FormItem>
                   )} />
                   <FormField control={form.control} name="category" render={({ field }) => (
                     <FormItem><FormLabel>Category</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a category" /></SelectTrigger></FormControl><SelectContent><SelectItem value="Technology">Technology</SelectItem><SelectItem value="Lifestyle">Lifestyle</SelectItem><SelectItem value="Travel">Travel</SelectItem><SelectItem value="Food">Food</SelectItem><SelectItem value="Business">Business</SelectItem></SelectContent></Select><FormMessage /></FormItem>
