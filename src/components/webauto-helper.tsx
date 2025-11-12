@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { v4 as uuidv4 } from "uuid";
 import { Download, Edit, Trash2, PlusCircle, X } from "lucide-react";
+import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -53,13 +54,27 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "./ui/label";
 
 const elementSchema = z.object({
   elementId: z
     .string()
     .min(1, "ID is required.")
     .regex(/^[a-zA-Z0-9_-]+$/, "ID can only contain letters, numbers, hyphens, and underscores."),
-  elementType: z.enum(["button", "input", "textarea", "p"]),
+  elementType: z.enum([
+    "button",
+    "input",
+    "textarea",
+    "p",
+    "h1",
+    "h2",
+    "h3",
+    "a",
+    "img",
+    "select",
+    "checkbox",
+  ]),
   value: z.string().optional(),
 });
 
@@ -196,25 +211,52 @@ export default function WebautoHelper() {
 
   const renderElement = (element: WebElement) => {
     const { internalId, ...rest } = element;
-    const props = {
+    const commonProps = {
       id: rest.elementId,
       className: "my-2"
     };
     switch (rest.elementType) {
       case "button":
-        return <Button key={internalId} {...props}>{rest.value || rest.elementId}</Button>;
+        return <Button key={internalId} {...commonProps}>{rest.value || rest.elementId}</Button>;
       case "input":
-        return <Input key={internalId} {...props} defaultValue={rest.value} placeholder={rest.elementId} />;
+        return <Input key={internalId} {...commonProps} defaultValue={rest.value} placeholder={rest.elementId} />;
       case "textarea":
-        return <Textarea key={internalId} {...props} defaultValue={rest.value} placeholder={rest.elementId} />;
+        return <Textarea key={internalId} {...commonProps} defaultValue={rest.value} placeholder={rest.elementId} />;
       case "p":
-        return <p key={internalId} {...props} className="p-2 bg-card border rounded-md">{rest.value || `This is a paragraph with id: ${rest.elementId}`}</p>;
+        return <p key={internalId} {...commonProps} className="p-2 bg-card border rounded-md">{rest.value || `This is a paragraph with id: ${rest.elementId}`}</p>;
+      case "h1":
+        return <h1 key={internalId} {...commonProps} className="text-4xl font-bold">{rest.value || rest.elementId}</h1>;
+      case "h2":
+        return <h2 key={internalId} {...commonProps} className="text-3xl font-semibold">{rest.value || rest.elementId}</h2>;
+      case "h3":
+        return <h3 key={internalId} {...commonProps} className="text-2xl font-semibold">{rest.value || rest.elementId}</h3>;
+      case "a":
+        return <a key={internalId} {...commonProps} href={rest.value || "#"} className="text-blue-500 underline">{rest.value ? `Link to ${rest.value}` : rest.elementId}</a>;
+      case "img":
+        return <Image key={internalId} data-ai-hint="image" {...commonProps} src={rest.value || 'https://picsum.photos/seed/1/200/300'} alt={rest.elementId} width={200} height={300} className="rounded-md" />;
+      case "select":
+        return (
+          <Select key={internalId} {...commonProps}>
+            <SelectTrigger>
+              <SelectValue placeholder={rest.value || "Select an option"} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="option1">Option 1</SelectItem>
+              <SelectItem value="option2">Option 2</SelectItem>
+            </SelectContent>
+          </Select>
+        );
+      case "checkbox":
+        return (
+          <div key={internalId} className="flex items-center space-x-2 my-2">
+            <Checkbox id={rest.elementId} />
+            <Label htmlFor={rest.elementId}>{rest.value || rest.elementId}</Label>
+          </div>
+        );
       default:
         return null;
     }
   };
-
-  const isFormDirty = form.formState.isDirty;
   
   return (
     <div className="space-y-6">
@@ -281,6 +323,13 @@ export default function WebautoHelper() {
                                 <SelectItem value="input">Input</SelectItem>
                                 <SelectItem value="textarea">Textarea</SelectItem>
                                 <SelectItem value="p">Paragraph</SelectItem>
+                                <SelectItem value="h1">Heading 1</SelectItem>
+                                <SelectItem value="h2">Heading 2</SelectItem>
+                                <SelectItem value="h3">Heading 3</SelectItem>
+                                <SelectItem value="a">Link</SelectItem>
+                                <SelectItem value="img">Image</SelectItem>
+                                <SelectItem value="select">Select</SelectItem>
+                                <SelectItem value="checkbox">Checkbox</SelectItem>
                               </SelectContent>
                             </Select>
                             <FormMessage />
@@ -292,9 +341,9 @@ export default function WebautoHelper() {
                         name="value"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Initial Value / Text</FormLabel>
+                            <FormLabel>Initial Value / Text / URL</FormLabel>
                             <FormControl>
-                              <Input id="element-value-input" placeholder="e.g., Click me" {...field} />
+                              <Input id="element-value-input" placeholder="e.g., Click me, or an image URL" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
