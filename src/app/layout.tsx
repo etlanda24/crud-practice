@@ -1,6 +1,7 @@
 import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
+import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Blog Post Manager',
@@ -24,6 +25,9 @@ export default function RootLayout({
           {children}
         </main>
         <Toaster />
+        <footer className="container mx-auto p-4 sm:p-6 lg:p-8 text-center text-muted-foreground">
+          <Link href="/prd" className="text-sm hover:underline">View Product Requirements Document</Link>
+        </footer>
       </body>
     </html>
   );
