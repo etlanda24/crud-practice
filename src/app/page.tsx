@@ -108,7 +108,9 @@ export default function Home() {
   }, [posts, isClient]);
 
 
-  const handleDelete = (id: string) => {
+  const handleDelete = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
     const postTitle = posts.find(p => p.id === id)?.title;
     setPosts(posts.filter((p) => p.id !== id));
     toast({
@@ -200,45 +202,45 @@ export default function Home() {
                {filteredPosts.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                       {filteredPosts.map((p) => (
-                      <Card key={p.id} id={`post-card-${p.id}`} className="flex flex-col">
-                          <CardHeader>
-                              {p.imageUrl ? (
-                                  <div className="relative aspect-video w-full mb-4">
-                                      <Image src={p.imageUrl} alt={p.title} fill className="object-cover rounded-md border" />
-                                  </div>
-                              ) : (
-                                  <div className="flex items-center justify-center aspect-video w-full mb-4 bg-muted rounded-md border">
-                                      <ImageIcon className="h-12 w-12 text-muted-foreground" />
-                                  </div>
-                              )}
-                              <CardTitle>{p.title}</CardTitle>
-                              <div className="flex items-center gap-2 text-sm text-muted-foreground pt-1">
-                                <User className="h-4 w-4" />
-                                <span>{p.author}</span>
-                              </div>
-                              <div className="flex items-center gap-2 text-sm text-muted-foreground pt-1">
-                                <Calendar className="h-4 w-4" />
-                                <span>{format(p.publishDate, "PPP")}</span>
-                              </div>
-                          </CardHeader>
-                          <CardContent className="flex-grow space-y-4">
-                              <p className="line-clamp-3 text-sm">{p.content}</p>
-                              <Separator />
-                                <div className="flex flex-wrap gap-2 items-center text-sm">
-                                  <Badge variant="outline">{p.category}</Badge>
-                                  <Badge variant={p.isPublished ? "default" : "secondary"}>
-                                    {p.isPublished ? 'Published' : 'Draft'}
-                                  </Badge>
-                                   <span className={`font-semibold ${priorityColors[p.priority]}`}>{p.priority} Priority</span>
-                              </div>
-                          </CardContent>
-                          <CardFooter className="flex justify-end gap-2">
-                              <Link href={`/posts/edit/${p.id}`}>
-                                <Button id={`edit-post-${p.id}`} variant="outline" size="icon"><Edit className="h-4 w-4" /><span className="sr-only">Edit</span></Button>
-                              </Link>
-                              <AlertDialog><AlertDialogTrigger asChild><Button id={`delete-post-${p.id}`} variant="destructive" size="icon"><Trash2 className="h-4 w-4" /><span className="sr-only">Delete</span></Button></AlertDialogTrigger><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Are you sure?</AlertDialogTitle><AlertDialogDescription>This will permanently delete the post <strong className="font-medium">"{p.title}"</strong>. This action cannot be undone.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction onClick={() => handleDelete(p.id)}>Delete</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
-                          </CardFooter>
-                      </Card>
+                      <Link href={`/posts/${p.id}`} key={p.id} className="group">
+                        <Card id={`post-card-${p.id}`} className="flex flex-col h-full transition-all group-hover:shadow-lg group-hover:border-primary">
+                            <CardHeader>
+                                {p.imageUrl ? (
+                                    <div className="relative aspect-video w-full mb-4">
+                                        <Image src={p.imageUrl} alt={p.title} fill className="object-cover rounded-md border" />
+                                    </div>
+                                ) : (
+                                    <div className="flex items-center justify-center aspect-video w-full mb-4 bg-muted rounded-md border">
+                                        <ImageIcon className="h-12 w-12 text-muted-foreground" />
+                                    </div>
+                                )}
+                                <CardTitle>{p.title}</CardTitle>
+                                <div className="flex items-center gap-2 text-sm text-muted-foreground pt-1">
+                                  <User className="h-4 w-4" />
+                                  <span>{p.author}</span>
+                                </div>
+                                <div className="flex items-center gap-2 text-sm text-muted-foreground pt-1">
+                                  <Calendar className="h-4 w-4" />
+                                  <span>{format(p.publishDate, "PPP")}</span>
+                                </div>
+                            </CardHeader>
+                            <CardContent className="flex-grow space-y-4">
+                                <p className="line-clamp-3 text-sm">{p.content}</p>
+                                <Separator />
+                                  <div className="flex flex-wrap gap-2 items-center text-sm">
+                                    <Badge variant="outline">{p.category}</Badge>
+                                    <Badge variant={p.isPublished ? "default" : "secondary"}>
+                                      {p.isPublished ? 'Published' : 'Draft'}
+                                    </Badge>
+                                     <span className={`font-semibold ${priorityColors[p.priority]}`}>{p.priority} Priority</span>
+                                </div>
+                            </CardContent>
+                            <CardFooter className="flex justify-end gap-2">
+                                <Button id={`edit-post-${p.id}`} variant="outline" size="icon" asChild onClick={(e) => e.stopPropagation()}><Link href={`/posts/edit/${p.id}`}><Edit className="h-4 w-4" /><span className="sr-only">Edit</span></Link></Button>
+                                <AlertDialog><AlertDialogTrigger asChild><Button id={`delete-post-${p.id}`} variant="destructive" size="icon" onClick={(e) => {e.stopPropagation(); e.preventDefault()}}><Trash2 className="h-4 w-4" /><span className="sr-only">Delete</span></Button></AlertDialogTrigger><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Are you sure?</AlertDialogTitle><AlertDialogDescription>This will permanently delete the post <strong className="font-medium">"{p.title}"</strong>. This action cannot be undone.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction onClick={(e) => handleDelete(p.id, e)}>Delete</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
+                            </CardFooter>
+                        </Card>
+                      </Link>
                       ))}
                   </div>
               ) : (
