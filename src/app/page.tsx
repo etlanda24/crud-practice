@@ -109,9 +109,7 @@ export default function Home() {
   }, [posts, isClient]);
 
 
-  const handleDelete = (id: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    e.preventDefault();
+  const handleDelete = (id: string) => {
     const postTitle = posts.find(p => p.id === id)?.title;
     setPosts(posts.filter((p) => p.id !== id));
     toast({
@@ -237,10 +235,32 @@ export default function Home() {
                                 </div>
                             </CardContent>
                             <CardFooter className="flex justify-end gap-2">
-                                <Button id={`edit-post-${p.id}`} variant="outline" size="icon" asChild onClick={(e) => e.stopPropagation()}>
-                                  <Link href={`/posts/edit/${p.id}`}><Edit className="h-4 w-4" /><span className="sr-only">Edit</span></Link>
-                                </Button>
-                                <AlertDialog><AlertDialogTrigger asChild><Button id={`delete-post-${p.id}`} variant="destructive" size="icon" onClick={(e) => {e.stopPropagation(); e.preventDefault()}}><Trash2 className="h-4 w-4" /><span className="sr-only">Delete</span></Button></AlertDialogTrigger><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Are you sure?</AlertDialogTitle><AlertDialogDescription>This will permanently delete the post <strong className="font-medium">"{p.title}"</strong>. This action cannot be undone.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction onClick={(e) => handleDelete(p.id, e)}>Delete</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
+                                <Link href={`/posts/edit/${p.id}`} onClick={(e) => e.stopPropagation()}>
+                                  <Button id={`edit-post-${p.id}`} variant="outline" size="icon">
+                                    <Edit className="h-4 w-4" />
+                                    <span className="sr-only">Edit</span>
+                                  </Button>
+                                </Link>
+                                <AlertDialog>
+                                  <AlertDialogTrigger asChild>
+                                    <Button id={`delete-post-${p.id}`} variant="destructive" size="icon" onClick={(e) => {e.stopPropagation(); e.preventDefault()}}>
+                                      <Trash2 className="h-4 w-4" />
+                                      <span className="sr-only">Delete</span>
+                                    </Button>
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                      <AlertDialogDescription>
+                                        This will permanently delete the post <strong className="font-medium">"{p.title}"</strong>. This action cannot be undone.
+                                      </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogCancel onClick={(e) => e.stopPropagation()}>Cancel</AlertDialogCancel>
+                                      <AlertDialogAction onClick={(e) => {e.stopPropagation(); handleDelete(p.id)}}>Delete</AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
                             </CardFooter>
                         </Card>
                       </Link>
