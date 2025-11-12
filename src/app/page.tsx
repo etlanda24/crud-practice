@@ -236,7 +236,11 @@ export default function Home() {
                                 </div>
                             </CardContent>
                             <CardFooter className="flex justify-end gap-2">
-                                <Button id={`edit-post-${p.id}`} variant="outline" size="icon" asChild onClick={(e) => e.stopPropagation()}><Link href={`/posts/edit/${p.id}`}><Edit className="h-4 w-4" /><span className="sr-only">Edit</span></Link></Button>
+                                <Link href={`/posts/edit/${p.id}`} passHref legacyBehavior>
+                                  <Button id={`edit-post-${p.id}`} variant="outline" size="icon" asChild onClick={(e) => e.stopPropagation()}>
+                                    <a><Edit className="h-4 w-4" /><span className="sr-only">Edit</span></a>
+                                  </Button>
+                                </Link>
                                 <AlertDialog><AlertDialogTrigger asChild><Button id={`delete-post-${p.id}`} variant="destructive" size="icon" onClick={(e) => {e.stopPropagation(); e.preventDefault()}}><Trash2 className="h-4 w-4" /><span className="sr-only">Delete</span></Button></AlertDialogTrigger><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Are you sure?</AlertDialogTitle><AlertDialogDescription>This will permanently delete the post <strong className="font-medium">"{p.title}"</strong>. This action cannot be undone.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction onClick={(e) => handleDelete(p.id, e)}>Delete</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
                             </CardFooter>
                         </Card>
@@ -254,5 +258,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
