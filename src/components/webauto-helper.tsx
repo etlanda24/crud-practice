@@ -195,20 +195,20 @@ export default function WebautoHelper() {
   };
 
   const renderElement = (element: WebElement) => {
+    const { internalId, ...rest } = element;
     const props = {
-      id: element.elementId,
-      key: element.internalId,
+      id: rest.elementId,
       className: "my-2"
     };
-    switch (element.elementType) {
+    switch (rest.elementType) {
       case "button":
-        return <Button {...props}>{element.value || element.elementId}</Button>;
+        return <Button key={internalId} {...props}>{rest.value || rest.elementId}</Button>;
       case "input":
-        return <Input {...props} defaultValue={element.value} placeholder={element.elementId} />;
+        return <Input key={internalId} {...props} defaultValue={rest.value} placeholder={rest.elementId} />;
       case "textarea":
-        return <Textarea {...props} defaultValue={element.value} placeholder={element.elementId} />;
+        return <Textarea key={internalId} {...props} defaultValue={rest.value} placeholder={rest.elementId} />;
       case "p":
-        return <p {...props} className="p-2 bg-card border rounded-md">{element.value || `This is a paragraph with id: ${element.elementId}`}</p>;
+        return <p key={internalId} {...props} className="p-2 bg-card border rounded-md">{rest.value || `This is a paragraph with id: ${rest.elementId}`}</p>;
       default:
         return null;
     }
