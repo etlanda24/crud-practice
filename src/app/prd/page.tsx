@@ -65,7 +65,7 @@ export default function PRDPage() {
                   <TableCell>F-01</TableCell>
                   <TableCell>View All Posts</TableCell>
                   <TableCell>The main page (`/`) will display all created blog posts in a card-based grid. Each card will show key post details.</TableCell>
-                  <TableCell className="font-mono text-xs">`posts-list-card`, `post-card-{id}`, `edit-post-{id}`, `delete-post-{id}`</TableCell>
+                  <TableCell className="font-mono text-xs">`posts-list-card`, `post-card-&#123;id&#125;`, `edit-post-&#123;id&#125;`, `delete-post-&#123;id&#125;`</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>F-02</TableCell>
@@ -77,7 +77,7 @@ export default function PRDPage() {
                   <TableCell>F-03</TableCell>
                   <TableCell>View a Single Post</TableCell>
                   <TableCell>Clicking on any post card navigates the user to a dedicated detail page (`/posts/[id]`) displaying the full post content and metadata.</TableCell>
-                  <TableCell className="font-mono text-xs">`post-details-card-{id}`, `back-to-posts-link`, `post-content`</TableCell>
+                  <TableCell className="font-mono text-xs">`post-details-card-&#123;id&#125;`, `back-to-posts-link`, `post-content`</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>F-04</TableCell>
@@ -89,13 +89,13 @@ export default function PRDPage() {
                   <TableCell>F-05</TableCell>
                   <TableCell>Edit an Existing Post</TableCell>
                   <TableCell>An "Edit" button on each post card navigates to an edit page (`/posts/edit/[id]`) that pre-fills the form with existing data.</TableCell>
-                  <TableCell className="font-mono text-xs">`edit-post-{id}`, and all IDs from F-04.</TableCell>
+                  <TableCell className="font-mono text-xs">`edit-post-&#123;id&#125;`, and all IDs from F-04.</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>F-06</TableCell>
                   <TableCell>Delete a Post</TableCell>
                   <TableCell>A "Delete" button on each post card triggers a confirmation dialog.</TableCell>
-                  <TableCell className="font-mono text-xs">`delete-post-{id}`</TableCell>
+                  <TableCell className="font-mono text-xs">`delete-post-&#123;id&#125;`</TableCell>
                 </TableRow>
                  <TableRow>
                   <TableCell>F-07</TableCell>
