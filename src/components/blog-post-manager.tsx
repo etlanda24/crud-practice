@@ -5,7 +5,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { v4 as uuidv4 } from "uuid";
-import { Edit, Trash2, PlusCircle, X, Calendar as CalendarIcon } from "lucide-react";
+import Image from "next/image";
+import { Edit, Trash2, PlusCircle, X, Calendar as CalendarIcon, Image as ImageIcon } from "lucide-react";
 import { format } from "date-fns";
 
 import { Button } from "@/components/ui/button";
@@ -13,6 +14,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -33,14 +35,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
 import {
   AlertDialog,
@@ -59,11 +53,13 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 
 const postSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters long."),
   content: z.string().min(10, "Content must be at least 10 characters long."),
   author: z.string().min(2, "Author name is required."),
+  imageUrl: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
   category: z.enum(["Technology", "Lifestyle", "Travel", "Food", "Business"]),
   priority: z.enum(["Low", "Medium", "High"]),
   isPublished: z.boolean().default(false),
@@ -94,6 +90,7 @@ export default function BlogPostManager() {
       title: "",
       content: "",
       author: "",
+      imageUrl: "",
       category: "Technology",
       priority: "Medium",
       isPublished: false,
@@ -162,6 +159,7 @@ export default function BlogPostManager() {
       title: "",
       content: "",
       author: "",
+      imageUrl: "",
       category: "Technology",
       priority: "Medium",
       isPublished: false,
@@ -173,6 +171,7 @@ export default function BlogPostManager() {
   const handleEdit = (post: BlogPost) => {
     setSelectedPost(post);
     form.reset(post);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleDelete = (id: string) => {
@@ -190,6 +189,7 @@ export default function BlogPostManager() {
       title: "",
       content: "",
       author: "",
+      imageUrl: "",
       category: "Technology",
       priority: "Medium",
       isPublished: false,
@@ -208,7 +208,7 @@ export default function BlogPostManager() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-1">
-          <Card id="post-form-card">
+          <Card id="post-form-card" className="sticky top-6">
             <CardHeader>
               <CardTitle className="flex items-center">
                 {selectedPost ? <Edit className="mr-2" /> : <PlusCircle className="mr-2" />}
@@ -229,6 +229,9 @@ export default function BlogPostManager() {
                   )} />
                   <FormField control={form.control} name="author" render={({ field }) => (
                     <FormItem><FormLabel>Author</FormLabel><FormControl><Input placeholder="e.g., John Doe" {...field} /></FormControl><FormMessage /></FormItem>
+                  )} />
+                  <FormField control={form.control} name="imageUrl" render={({ field }) => (
+                    <FormItem><FormLabel>Image URL</FormLabel><FormControl><Input type="url" placeholder="https://example.com/image.jpg" {...field} /></FormControl><FormMessage /></FormItem>
                   )} />
                   <FormField control={form.control} name="category" render={({ field }) => (
                     <FormItem><FormLabel>Category</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a category" /></SelectTrigger></FormControl><SelectContent><SelectItem value="Technology">Technology</SelectItem><SelectItem value="Lifestyle">Lifestyle</SelectItem><SelectItem value="Travel">Travel</SelectItem><SelectItem value="Food">Food</SelectItem><SelectItem value="Business">Business</SelectItem></SelectContent></Select><FormMessage /></FormItem>
@@ -252,39 +255,41 @@ export default function BlogPostManager() {
           </Card>
         </div>
         <div className="lg:col-span-2">
-            <Card id="posts-list-card">
+            <Card>
                 <CardHeader>
                     <CardTitle>Blog Posts</CardTitle>
                     <CardDescription>View, edit, or delete your posts.</CardDescription>
                 </CardHeader>
                 <CardContent>
                      {posts.length > 0 ? (
-                        <div className="overflow-x-auto">
-                            <Table>
-                            <TableHeader>
-                                <TableRow>
-                                <TableHead>Title</TableHead>
-                                <TableHead>Category</TableHead>
-                                <TableHead>Published</TableHead>
-                                <TableHead className="text-right">Actions</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {posts.map((p) => (
-                                <TableRow key={p.id}>
-                                    <TableCell className="font-medium">{p.title}</TableCell>
-                                    <TableCell>{p.category}</TableCell>
-                                    <TableCell>{p.isPublished ? 'Yes' : 'No'}</TableCell>
-                                    <TableCell className="text-right">
-                                    <div className="flex justify-end gap-2">
-                                        <Button variant="outline" size="icon" onClick={() => handleEdit(p)}><Edit className="h-4 w-4" /><span className="sr-only">Edit</span></Button>
-                                        <AlertDialog><AlertDialogTrigger asChild><Button variant="destructive" size="icon"><Trash2 className="h-4 w-4" /><span className="sr-only">Delete</span></Button></AlertDialogTrigger><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Are you sure?</AlertDialogTitle><AlertDialogDescription>This will permanently delete the post <strong className="font-medium">"{p.title}"</strong>. This action cannot be undone.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction onClick={() => handleDelete(p.id)}>Delete</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {posts.map((p) => (
+                            <Card key={p.id} className="flex flex-col">
+                                <CardHeader>
+                                    {p.imageUrl ? (
+                                        <div className="relative aspect-video w-full mb-4">
+                                            <Image src={p.imageUrl} alt={p.title} fill className="object-cover rounded-md border" />
+                                        </div>
+                                    ) : (
+                                        <div className="flex items-center justify-center aspect-video w-full mb-4 bg-muted rounded-md border">
+                                            <ImageIcon className="h-12 w-12 text-muted-foreground" />
+                                        </div>
+                                    )}
+                                    <CardTitle>{p.title}</CardTitle>
+                                    <div className="flex flex-wrap gap-2 items-center text-sm text-muted-foreground pt-1">
+                                        <Badge variant="outline">{p.category}</Badge>
+                                        <span className={p.isPublished ? "text-green-600" : "text-amber-600"}>{p.isPublished ? 'Published' : 'Draft'}</span>
                                     </div>
-                                    </TableCell>
-                                </TableRow>
-                                ))}
-                            </TableBody>
-                            </Table>
+                                </CardHeader>
+                                <CardContent className="flex-grow">
+                                    <p className="line-clamp-3 text-sm">{p.content}</p>
+                                </CardContent>
+                                <CardFooter className="flex justify-end gap-2">
+                                    <Button variant="outline" size="icon" onClick={() => handleEdit(p)}><Edit className="h-4 w-4" /><span className="sr-only">Edit</span></Button>
+                                    <AlertDialog><AlertDialogTrigger asChild><Button variant="destructive" size="icon"><Trash2 className="h-4 w-4" /><span className="sr-only">Delete</span></Button></AlertDialogTrigger><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Are you sure?</AlertDialogTitle><AlertDialogDescription>This will permanently delete the post <strong className="font-medium">"{p.title}"</strong>. This action cannot be undone.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction onClick={() => handleDelete(p.id)}>Delete</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
+                                </CardFooter>
+                            </Card>
+                            ))}
                         </div>
                     ) : (
                         <div className="text-center text-muted-foreground py-10">
