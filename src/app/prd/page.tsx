@@ -97,12 +97,6 @@ export default function PRDPage() {
                   <TableCell>A "Delete" button on each post card triggers a confirmation dialog.</TableCell>
                   <TableCell className="font-mono text-xs">`delete-post-&#123;id&#125;`</TableCell>
                 </TableRow>
-                 <TableRow>
-                  <TableCell>F-07</TableCell>
-                  <TableCell>Data Persistence</TableCell>
-                  <TableCell>All blog post data will be stored in the browser's local storage.</TableCell>
-                  <TableCell>N/A (Not a UI feature)</TableCell>
-                </TableRow>
               </TableBody>
             </Table>
           </CardContent>
