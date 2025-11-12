@@ -3,8 +3,8 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
-  title: 'Webauto Helper',
-  description: 'A simple CRUD app for web automation practice.',
+  title: 'Blog Post Manager',
+  description: 'A CRUD app for managing blog posts.',
 };
 
 export default function RootLayout({
